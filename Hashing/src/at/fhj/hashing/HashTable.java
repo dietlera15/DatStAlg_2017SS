@@ -51,7 +51,18 @@ public class HashTable {
 		int key = obj.hashCode();
 
 		// Begin implementation
-	
+		int h1 = hash1(key);
+		int h2 = hash2(key);	
+		for (int i = 0; i < table.length; i++) {
+			if (isFree(h1)) { 
+				setEntry(h1, obj);
+				return h1;
+			} else if (getEntry(h1).hashCode() == key) {
+				return -1;
+			} else {
+				h1 = stayPositive(h1 - h2);
+			}
+		}
 		return -1; // change it!
 		// End implementation
 	}
@@ -66,7 +77,26 @@ public class HashTable {
 		int key = obj.hashCode();
 
 		// Begin implementation
-
+		int h1 = hash1(key);
+		int h2 = hash2(key);
+		for (int i = 0; i < table.length; i++) {
+			if (isFree(h1)) { 
+				setEntry(h1, obj);
+				return h1;
+			} else if (getEntry(h1).hashCode() == key) {
+				return -1;
+			} else {
+				int b1 = hash1(i - h1);
+				int b2 = hash2(i - h2);
+				int b = stayPositive(b1 - b2);
+				if (isFree(b)) {
+					setEntry(b, getEntry(h1));
+					setEntry(h1, obj);
+				} else {
+					h1 = stayPositive(h1 - h2);
+				}
+			}
+		}		
 		return -1;  // change it!
 		// End implementation
 	}
@@ -78,8 +108,8 @@ public class HashTable {
 	 */
 	public Object retrieve(int key) {
 		// Begin implementation
-
-		return null;  // change it!
+		int ret = searchK(key);
+		return getEntry(ret);
 		// End implementation
 	}
 	
@@ -90,8 +120,10 @@ public class HashTable {
 	 */
 	public boolean delete(int key) {
 		// Begin implementation
-
-		return false;  // change it!
+		int del = searchK(key);
+		deleteEntry(del);
+		return true;
+		//return false;  // change it!
 		// End implementation
 	}
 	
@@ -156,6 +188,55 @@ public class HashTable {
 	
 	// Place your private methods here
 	// Begin implementation
-
+	/**
+	 * h(k) = k mod m
+	 * @param k ... key for hashing
+	 * @return position for hashed key value
+	 */
+	private int hash1(int k) {
+		return stayPositive(k % table.length);
+	}
+	
+	/**
+	 * h'(k) = 1 + [k mod (m-2)]
+	 * @param k ... key for hashing
+	 * @return position for hashed key value
+	 */
+	private int hash2(int k) {
+		return stayPositive(1 + k % (table.length - 2));
+	}
+	
+	/**
+	 * [h(k) - h'(k)] mod m
+	 * h(i,k) = (h(k) - i * h'(k)) mod m.
+	 * search index for given key ...
+	 * if an empty entry is found, key was never used.
+	 * if an free entry is found, check next hash index
+	 * if an entry is found, check if entry == key
+	 * @param k
+	 * @return
+	 */
+	private int searchK(int k) {
+		int index = hash1(k);
+		for (int i = 0; i < table.length; i++) {
+			if (isEmpty(index)) {
+				return -1;
+			} else if (isFree(index) || getEntry(index).hashCode() != k) {
+				index = stayPositive((hash1(k) - i * hash2(k)) % table.length);
+			} else {
+				return index;
+			}
+		}
+		return index;
+	}
+	
+	/**
+	 * in Java the calculated modulo can be a negative number
+	 * @param a
+	 * @return a as a positive value
+	 */
+	private int stayPositive (int a) {
+		return (a + table.length) % table.length; 
+	}
 	// End implementation
 }
