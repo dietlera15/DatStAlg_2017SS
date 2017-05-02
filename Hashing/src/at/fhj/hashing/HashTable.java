@@ -86,11 +86,12 @@ public class HashTable {
 			} else if (getEntry(h1).hashCode() == key) {
 				return -1;
 			} else {
-				int b1 = hash1(i - h1);
-				int b2 = hash2(i - h2);
-				int b = stayPositive(b1 - b2);
-				if (isFree(b)) {
-					setEntry(b, getEntry(h1));
+				int keyb = getEntry(h1).hashCode();
+				int h2b = hash2(keyb);
+				int b1 = i - h2;
+				int b2 = i - h2b;
+				if (isFree(b1)) {
+					setEntry(b1, getEntry(h1));
 					setEntry(h1, obj);
 				} else {
 					h1 = stayPositive(h1 - h2);
@@ -109,7 +110,11 @@ public class HashTable {
 	public Object retrieve(int key) {
 		// Begin implementation
 		int ret = searchK(key);
-		return getEntry(ret);
+		if (ret >= 0) {
+			return getEntry(ret);	
+		} else {
+			return null;
+		}
 		// End implementation
 	}
 	
@@ -121,8 +126,12 @@ public class HashTable {
 	public boolean delete(int key) {
 		// Begin implementation
 		int del = searchK(key);
-		deleteEntry(del);
-		return true;
+		if (del >= 0) {
+			deleteEntry(del);
+			return true;
+		} else {
+			return false;
+		}
 		//return false;  // change it!
 		// End implementation
 	}
