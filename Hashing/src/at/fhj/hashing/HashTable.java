@@ -52,7 +52,7 @@ public class HashTable {
 
 		// Begin implementation
 		int h1 = hash1(key);
-		int h2 = hash2(key);	
+		int h2 = hash2(key);
 		for (int i = 0; i < table.length; i++) {
 			if (isFree(h1)) { 
 				setEntry(h1, obj);
@@ -88,13 +88,13 @@ public class HashTable {
 			} else {
 				int keyb = getEntry(h1).hashCode();
 				int h2b = hash2(keyb);
-				int b1 = i - h2;
-				int b2 = i - h2b;
-				if (isFree(b1)) {
-					setEntry(b1, getEntry(h1));
-					setEntry(h1, obj);
+				int b1 = stayPositive(h1 - h2);
+				int b2 = stayPositive(h1 - h2b);
+				if (isFree(b1) || !isFree(b2)) {
+					h1 = stayPositive(b1);
 				} else {
-					h1 = stayPositive(h1 - h2);
+					setEntry(b2, getEntry(h1));
+					setEntry(h1, null);
 				}
 			}
 		}		
