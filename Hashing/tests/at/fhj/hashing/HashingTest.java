@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import at.fhj.hashing.*;
+//import at.fhj.hashing.*;
 
 public class HashingTest {
 	@Test
